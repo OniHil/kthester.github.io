@@ -161,3 +161,57 @@ document.addEventListener('DOMContentLoaded', (event) => {
 });
 
 
+  document.addEventListener("DOMContentLoaded", () => {
+    const links = document.querySelectorAll("nav a");
+    const hash  = window.location.hash; // e.g. "#Membership"
+
+    // clear old active
+    links.forEach(a => a.classList.remove("active"));
+
+    // set active if hash matches a href
+    if (hash) {
+      const match = Array.from(links).find(a => a.getAttribute("href") === hash);
+      if (match) {
+        match.classList.add("active");
+        return;
+      }
+    }
+
+    // fallback: if no hash, highlight About Us (or whichever is your "home" section)
+    const defaultLink = document.querySelector('nav a[href="#AboutUs"]');
+    if (defaultLink) defaultLink.classList.add("active");
+  });
+
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const links = document.querySelectorAll("nav a");
+    const hash  = window.location.hash; // e.g. "#Membership"
+    const path  = window.location.pathname.replace(/\/index\.html$/, "/"); // normalize
+
+    // clear old active
+    links.forEach(a => a.classList.remove("active"));
+
+    // 1. set active if hash matches a href (for index.html sections)
+    if (hash) {
+      const match = Array.from(links).find(a => a.getAttribute("href") === path + hash || a.getAttribute("href") === hash);
+      if (match) {
+        match.classList.add("active");
+        return;
+      }
+    }
+
+    // 2. if we’re on events.html, highlight Events
+    if (path.endsWith("events.html")) {
+      const eventsLink = Array.from(links).find(a => a.getAttribute("href").includes("events.html"));
+      if (eventsLink) {
+        eventsLink.classList.add("active");
+        return;
+      }
+    }
+
+    // 3. fallback: if no hash and on index.html, highlight About Us
+    if (path === "/" || path.endsWith("index.html")) {
+      const defaultLink = document.querySelector('nav a[href$="#AboutUs"]');
+      if (defaultLink) defaultLink.classList.add("active");
+    }
+  });

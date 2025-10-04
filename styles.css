@@ -62,6 +62,33 @@ width: calc(100% - 6px);
 margin: 0 3px;
 right: auto;
 }
+
+
+/* kill the gray/white click highlight */
+nav a,
+nav a:hover,
+nav a:active,
+nav a:focus {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* accessibility: show outline only for keyboard navigation */
+nav a:focus {
+  outline: none;
+}
+nav a:focus-visible {
+  outline: 2px solid #002fff;
+  outline-offset: 4px;
+}
+
+/* avoid mobile tap highlight */
+nav {
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+
 /* Logo */
 #logo {
 width: 10%;
@@ -111,6 +138,7 @@ text-align: justify;
     border: none;
     cursor: pointer;
 }
+
 
 /* Banner styles */
 .banner {
@@ -351,20 +379,23 @@ section h1 {
     }
 }
 
- .join-button {
-    margin-top: 20px;
-    display: inline-block;
-    padding: 18px 40px;             /* bigger padding = bigger button */
-    background-color: #002fff;      /* bright standout color (orange/red) */
-    color: white;
-    font-size: 22px;                /* larger text */
-    font-weight: bold;              /* makes it pop */
-    text-decoration: none;
-    border-radius: 12px;            /* rounder edges */
-    box-shadow: 0 8px 20px rgba(0,0,0,0.25); /* shadow to "lift" it */
-    transition: transform 0.2s ease, background-color 0.3s ease;
-  }
-
+.join-button {
+  margin-top: 20px;
+  display: inline-flex;      
+  align-items: center;       /* vertical centering */
+  justify-content: center;   /* horizontal centering */
+  height: 70px;              /* FIXED vertical size */
+  width: 230px;              /* optional: same width too */
+  
+  background-color: #002fff;
+  color: white;
+  font-size: 22px;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+  transition: transform 0.2s ease, background-color 0.3s ease;
+}
   .join-button:hover {
     /*background-color: #ffffff;      /* darker hover color */
     transform: scale(1.05);         /* slight zoom effect */
