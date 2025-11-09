@@ -38,6 +38,13 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
     navLinks.forEach(function (link) {
         link.addEventListener('click', function (e) {
+            const nav = document.querySelector('nav');
+            const hamburger = document.querySelector('.hamburger');
+            if (nav && nav.classList.contains('nav-active')) {
+                nav.classList.remove('nav-active');
+                hamburger.classList.remove('toggle');
+            }
+
             var href = this.getAttribute('href');
             if (!href || !href.startsWith('#')) return;
 
