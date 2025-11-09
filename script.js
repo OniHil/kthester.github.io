@@ -3,20 +3,20 @@ window.addEventListener('DOMContentLoaded', (event) => {
     let scrollingToTop = false;  // Add this flag variable
 
     if (window.location.pathname.endsWith('events.html') || window.location.pathname.includes('events.html')) {
-        document.getElementById('logo').addEventListener('click', function(e) {
+        document.getElementById('logo').addEventListener('click', function (e) {
             e.preventDefault(); // Prevent default action
             window.location.href = 'index.html'; // Navigate to 'index.html'
         });
     } else {
-        document.getElementById('logo').addEventListener('click', function(e) {
+        document.getElementById('logo').addEventListener('click', function (e) {
             e.preventDefault();
-    
+
             scrollActionInProgress = true;
             window.scrollTo({ top: 0, behavior: 'smooth' });
-    
+
             // Reset the flag after the scroll duration (adjust the duration as needed)
-            setTimeout(function(e) {
-            scrollActionInProgress = false;
+            setTimeout(function (e) {
+                scrollActionInProgress = false;
             }, 200);  // Adjust this value based on your scrolling time
         });
     }
@@ -25,6 +25,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
     const banner = document.querySelector('.banner');
 
     const updateBannerHeight = () => {
+        if (!banner) return;
         const headerHeight = header.offsetHeight;
         banner.style.setProperty('--header-height', `${headerHeight}px`);
     };
@@ -35,75 +36,88 @@ window.addEventListener('DOMContentLoaded', (event) => {
     var navLinks = document.querySelectorAll('nav a');
     var scrollActionInProgress = false;
 
-    navLinks.forEach(function(link) {
-        link.addEventListener('click', function(e) {
-        e.preventDefault();
+    navLinks.forEach(function (link) {
+        link.addEventListener('click', function (e) {
+            var href = this.getAttribute('href');
+            if (!href || !href.startsWith('#')) return;
 
-        navLinks.forEach(function(otherLink) {
-            if (otherLink !== this) {
-            otherLink.classList.remove('active');
-            }
-        }, this);
+            var targetSection = document.querySelector(href);
+            if (!targetSection) return;
 
-        this.classList.add('active');
+            e.preventDefault();
 
-        var targetSection = document.querySelector(this.getAttribute('href'));
-        var targetOffsetTop = targetSection.offsetTop;
-        var scrollOptions = {
-            top: targetOffsetTop,
-            behavior: 'smooth'
-        };
+            navLinks.forEach(function (otherLink) {
+                if (otherLink !== this) {
+                    otherLink.classList.remove('active');
+                }
+            }, this);
 
-        scrollActionInProgress = true;
-        window.scrollTo(scrollOptions);
+            this.classList.add('active');
 
-        // Delay for scroll event listener to start working
-        setTimeout(function() {
-            scrollActionInProgress = false;
-        }, 500);  // Adjust this value based on your scrolling time
+            var targetOffsetTop = targetSection.offsetTop;
+            var scrollOptions = {
+                top: targetOffsetTop,
+                behavior: 'smooth'
+            };
+
+            scrollActionInProgress = true;
+            window.scrollTo(scrollOptions);
+
+            // Delay for scroll event listener to start working
+            setTimeout(function () {
+                scrollActionInProgress = false;
+            }, 500);  // Adjust this value based on your scrolling time
         });
     });
 
-    window.addEventListener('scroll', function() {
-        if (!scrollActionInProgress) {
+    window.addEventListener('scroll', function () {
+        if (scrollActionInProgress) return;
+
         var scrollPosition = window.scrollY || document.documentElement.scrollTop;
         var scrollThreshold = 500;
-        var bannerHeight = document.querySelector('.banner').offsetHeight;
-        
+        var banner = document.querySelector('.banner');
+        var bannerHeight = banner ? banner.offsetHeight : 0;
+
         if (scrollPosition < bannerHeight) {
-            navLinks.forEach(function(link) {
-            link.classList.remove('active');
+            navLinks.forEach(function (link) {
+                link.classList.remove('active');
             });
-        } else {
-            navLinks.forEach(function(link) {
+            return;
+        }
+
+        navLinks.forEach(function (link) {
             var currLink = link;
             var val = link.getAttribute('href');
+
+            if (!val || !val.startsWith("#")) return;
+
             var refElement = document.querySelector(val);
+            if (!refElement) return;
+
             var offsetTop = refElement.offsetTop - scrollThreshold;
             var isVisible =
                 scrollPosition >= offsetTop &&
                 scrollPosition < offsetTop + refElement.offsetHeight;
 
-            if (isVisible) {
-                navLinks.forEach(function(link) {
+            if (!isVisible) return;
+
+            navLinks.forEach(function (link) {
                 if (link !== currLink) {
                     link.classList.remove('active');
                 }
-                });
-                currLink.classList.add('active');
-            }
             });
-        }
-        }
+            currLink.classList.add('active');
+        });
     });
 });
+
 document.addEventListener('DOMContentLoaded', (event) => {
     // Select the Events link
     const eventsLink = document.querySelector('nav a[href="events.html"]');
 
     // Add click event listener if the link exists
     if (eventsLink) {
-        eventsLink.addEventListener('click', function(event) {
+        eventsLink.addEventListener('click', function (event) {
             // Optional: Any specific logic you want to execute before redirection
             // event.preventDefault(); // Uncomment this line only if you have additional logic to execute before redirection
 
