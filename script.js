@@ -3,20 +3,20 @@ window.addEventListener('DOMContentLoaded', (event) => {
     let scrollingToTop = false;  // Add this flag variable
 
     if (window.location.pathname.endsWith('events.html') || window.location.pathname.includes('events.html')) {
-        document.getElementById('logo').addEventListener('click', function(e) {
+        document.getElementById('logo').addEventListener('click', function (e) {
             e.preventDefault(); // Prevent default action
             window.location.href = 'index.html'; // Navigate to 'index.html'
         });
     } else {
-        document.getElementById('logo').addEventListener('click', function(e) {
+        document.getElementById('logo').addEventListener('click', function (e) {
             e.preventDefault();
-    
+
             scrollActionInProgress = true;
             window.scrollTo({ top: 0, behavior: 'smooth' });
-    
+
             // Reset the flag after the scroll duration (adjust the duration as needed)
-            setTimeout(function(e) {
-            scrollActionInProgress = false;
+            setTimeout(function (e) {
+                scrollActionInProgress = false;
             }, 200);  // Adjust this value based on your scrolling time
         });
     }
@@ -25,6 +25,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
     const banner = document.querySelector('.banner');
 
     const updateBannerHeight = () => {
+        if (!banner) return;
         const headerHeight = header.offsetHeight;
         banner.style.setProperty('--header-height', `${headerHeight}px`);
     };
@@ -35,75 +36,95 @@ window.addEventListener('DOMContentLoaded', (event) => {
     var navLinks = document.querySelectorAll('nav a');
     var scrollActionInProgress = false;
 
-    navLinks.forEach(function(link) {
-        link.addEventListener('click', function(e) {
-        e.preventDefault();
-
-        navLinks.forEach(function(otherLink) {
-            if (otherLink !== this) {
-            otherLink.classList.remove('active');
+    navLinks.forEach(function (link) {
+        link.addEventListener('click', function (e) {
+            const nav = document.querySelector('nav');
+            const hamburger = document.querySelector('.hamburger');
+            if (nav && nav.classList.contains('nav-active')) {
+                nav.classList.remove('nav-active');
+                hamburger.classList.remove('toggle');
             }
-        }, this);
 
-        this.classList.add('active');
+            var href = this.getAttribute('href');
+            if (!href || !href.startsWith('#')) return;
 
-        var targetSection = document.querySelector(this.getAttribute('href'));
-        var targetOffsetTop = targetSection.offsetTop;
-        var scrollOptions = {
-            top: targetOffsetTop,
-            behavior: 'smooth'
-        };
+            var targetSection = document.querySelector(href);
+            if (!targetSection) return;
 
-        scrollActionInProgress = true;
-        window.scrollTo(scrollOptions);
+            e.preventDefault();
 
-        // Delay for scroll event listener to start working
-        setTimeout(function() {
-            scrollActionInProgress = false;
-        }, 500);  // Adjust this value based on your scrolling time
+            navLinks.forEach(function (otherLink) {
+                if (otherLink !== this) {
+                    otherLink.classList.remove('active');
+                }
+            }, this);
+
+            this.classList.add('active');
+
+            var targetOffsetTop = targetSection.offsetTop;
+            var scrollOptions = {
+                top: targetOffsetTop,
+                behavior: 'smooth'
+            };
+
+            scrollActionInProgress = true;
+            window.scrollTo(scrollOptions);
+
+            // Delay for scroll event listener to start working
+            setTimeout(function () {
+                scrollActionInProgress = false;
+            }, 500);  // Adjust this value based on your scrolling time
         });
     });
 
-    window.addEventListener('scroll', function() {
-        if (!scrollActionInProgress) {
+    window.addEventListener('scroll', function () {
+        if (scrollActionInProgress) return;
+
         var scrollPosition = window.scrollY || document.documentElement.scrollTop;
         var scrollThreshold = 500;
-        var bannerHeight = document.querySelector('.banner').offsetHeight;
-        
+        var banner = document.querySelector('.banner');
+        var bannerHeight = banner ? banner.offsetHeight : 0;
+
         if (scrollPosition < bannerHeight) {
-            navLinks.forEach(function(link) {
-            link.classList.remove('active');
+            navLinks.forEach(function (link) {
+                link.classList.remove('active');
             });
-        } else {
-            navLinks.forEach(function(link) {
+            return;
+        }
+
+        navLinks.forEach(function (link) {
             var currLink = link;
             var val = link.getAttribute('href');
+
+            if (!val || !val.startsWith("#")) return;
+
             var refElement = document.querySelector(val);
+            if (!refElement) return;
+
             var offsetTop = refElement.offsetTop - scrollThreshold;
             var isVisible =
                 scrollPosition >= offsetTop &&
                 scrollPosition < offsetTop + refElement.offsetHeight;
 
-            if (isVisible) {
-                navLinks.forEach(function(link) {
+            if (!isVisible) return;
+
+            navLinks.forEach(function (link) {
                 if (link !== currLink) {
                     link.classList.remove('active');
                 }
-                });
-                currLink.classList.add('active');
-            }
             });
-        }
-        }
+            currLink.classList.add('active');
+        });
     });
 });
+
 document.addEventListener('DOMContentLoaded', (event) => {
     // Select the Events link
     const eventsLink = document.querySelector('nav a[href="events.html"]');
 
     // Add click event listener if the link exists
     if (eventsLink) {
-        eventsLink.addEventListener('click', function(event) {
+        eventsLink.addEventListener('click', function (event) {
             // Optional: Any specific logic you want to execute before redirection
             // event.preventDefault(); // Uncomment this line only if you have additional logic to execute before redirection
 
@@ -160,58 +181,14 @@ document.addEventListener('DOMContentLoaded', (event) => {
     }
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+    const hamburger = document.querySelector('.hamburger');
+    const nav = document.querySelector('nav');
 
-  document.addEventListener("DOMContentLoaded", () => {
-    const links = document.querySelectorAll("nav a");
-    const hash  = window.location.hash; // e.g. "#Membership"
-
-    // clear old active
-    links.forEach(a => a.classList.remove("active"));
-
-    // set active if hash matches a href
-    if (hash) {
-      const match = Array.from(links).find(a => a.getAttribute("href") === hash);
-      if (match) {
-        match.classList.add("active");
-        return;
-      }
+    if (hamburger && nav) {
+        hamburger.addEventListener('click', () => {
+            nav.classList.toggle('nav-active');
+            hamburger.classList.toggle('toggle');
+        });
     }
-
-    // fallback: if no hash, highlight About Us (or whichever is your "home" section)
-    const defaultLink = document.querySelector('nav a[href="#AboutUs"]');
-    if (defaultLink) defaultLink.classList.add("active");
-  });
-
-
-  document.addEventListener("DOMContentLoaded", () => {
-    const links = document.querySelectorAll("nav a");
-    const hash  = window.location.hash; // e.g. "#Membership"
-    const path  = window.location.pathname.replace(/\/index\.html$/, "/"); // normalize
-
-    // clear old active
-    links.forEach(a => a.classList.remove("active"));
-
-    // 1. set active if hash matches a href (for index.html sections)
-    if (hash) {
-      const match = Array.from(links).find(a => a.getAttribute("href") === path + hash || a.getAttribute("href") === hash);
-      if (match) {
-        match.classList.add("active");
-        return;
-      }
-    }
-
-    // 2. if we’re on events.html, highlight Events
-    if (path.endsWith("events.html")) {
-      const eventsLink = Array.from(links).find(a => a.getAttribute("href").includes("events.html"));
-      if (eventsLink) {
-        eventsLink.classList.add("active");
-        return;
-      }
-    }
-
-    // 3. fallback: if no hash and on index.html, highlight About Us
-    if (path === "/" || path.endsWith("index.html")) {
-      const defaultLink = document.querySelector('nav a[href$="#AboutUs"]');
-      if (defaultLink) defaultLink.classList.add("active");
-    }
-  });
+});
